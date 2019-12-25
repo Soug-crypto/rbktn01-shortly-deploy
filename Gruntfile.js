@@ -1,8 +1,14 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      src: [
+        "app/**/*.js",
+        "lib/*.js",
+        "*.js"
+      ],
+      dest: 'dist/built.js',
     },
 
     mochaTest: {
@@ -25,7 +31,9 @@ module.exports = function(grunt) {
 
     eslint: {
       target: [
-        // Add list of files to lint here
+        "app/**/*.js",
+        "lib/*.js",
+        "*.js"
       ]
     },
 
@@ -50,9 +58,18 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      prodServer: {
+
+      add: {
+        command: 'git add .'
+      },
+      commit: {
+        command: 'git commit -m "commited by grunt gang"'
+      },
+      push: {
+        command: 'git push heroku master'
       }
-    },
+
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -65,7 +82,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-nodemon');
 
   grunt.registerTask('server-dev', function (target) {
-    grunt.task.run([ 'nodemon', 'watch' ]);
+    grunt.task.run(['nodemon', 'watch']);
   });
 
   ////////////////////////////////////////////////////
@@ -73,23 +90,27 @@ module.exports = function(grunt) {
   ////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
+    "eslint",
     'mochaTest'
   ]);
 
   grunt.registerTask('build', [
   ]);
 
-  grunt.registerTask('upload', function(n) {
+  grunt.registerTask('upload', function (n) {
     if (grunt.option('prod')) {
       // add your production server task here
     } else {
-      grunt.task.run([ 'server-dev' ]);
+      grunt.task.run(['server-dev']);
     }
   });
 
   grunt.registerTask('deploy', [
     // add your deploy tasks here
-  ]);
+    // grunt.task.run(['concat', 'uglify', 'cssmin', 'shell:prodServer:add', 'shell:prodServer:commit', 'shell:prodServer:push'])
+    grunt.task.run(['shell:add', 'shell:commit', 'shell:push'])
+
+  ])
 
 
 };
